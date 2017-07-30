@@ -43,6 +43,16 @@ export interface PostgresConnectionOptions extends BaseConnectionOptions {
     /**
      * Schema name. By default is "public".
      */
+    readonly schema?: string;
+
+    /**
+     * @deprecated use "schema" instead
+     */
     readonly schemaName?: string;
+
+    /**
+     * Object with ssl parameters
+     */
+    readonly ssl?: any;
 
 }

@@ -174,7 +174,8 @@ export class PostgresDriver implements Driver {
             user: this.options.username,
             password: this.options.password,
             database: this.options.database,
-            port: this.options.port
+            port: this.options.port,
+            ssl: this.options.ssl
         }, this.options.extra || {});
 
         // pooling is enabled either when its set explicitly to true,
@@ -191,6 +192,17 @@ export class PostgresDriver implements Driver {
             queryRunner.query(`CREATE extension IF NOT EXISTS "uuid-ossp"`);
 
         await queryRunner.release();
+    }
+
+    async afterConnect(): Promise<void> {
+        if (this.connection.entityMetadatas.some(metadata => metadata.generatedColumns.filter(column => column.generationStrategy === "uuid").length > 0)) {
+            const queryRunner = await this.createQueryRunner();
+            await queryRunner.connect();
+            await queryRunner.query(`CREATE extension IF NOT EXISTS "uuid-ossp"`);
+            await queryRunner.release();
+        }
+
+        return Promise.resolve();
     }
 
     /**

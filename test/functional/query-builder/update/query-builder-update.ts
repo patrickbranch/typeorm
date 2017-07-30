@@ -11,7 +11,7 @@ describe("query builder > update", () => {
     before(async () => connections = await createTestingConnections({
         entities: [__dirname + "/entity/*{.js,.ts}"],
         schemaCreate: true,
-        dropSchemaOnConnection: true,
+        dropSchema: true,
     }));
     beforeEach(() => reloadTestingDatabases(connections));
     after(() => closeTestingConnections(connections));
@@ -37,7 +37,7 @@ describe("query builder > update", () => {
             .createQueryBuilder("myUser")
             .update()
             .set({ name: "Muhammad Mirzoev" })
-            .where("myUser.name = :name", { name: "Dima Zotov" })
+            .where("name = :name", { name: "Dima Zotov" })
             .execute();
 
         const loadedUser2 = await connection.getRepository(User).findOne({ name: "Muhammad Mirzoev" });

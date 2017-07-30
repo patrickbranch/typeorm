@@ -715,7 +715,7 @@ AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDE
      * Database name shortcut.
      */
     protected get dbName(): string {
-        return this.driver.options.schemaName as string;
+        return (this.driver.options.schema || this.driver.options.schemaName) as string;
     }
 
     /**
@@ -730,12 +730,10 @@ AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDE
      */
     protected buildCreateColumnSql(column: ColumnSchema) {
         let c = `"${column.name}" ` + this.connection.driver.createFullType(column);
-        if (column.length)
-            c += "(" + column.length + ")";
-        if (column.precision && column.scale)
-            c += "(" + column.precision + "," + column.scale + ")";
-        if (column.precision)
-            c += "(" + column.precision + ")";
+        if (column.charset)
+            c += " CHARACTER SET " + column.charset;
+        if (column.collation)
+            c += " COLLATE " + column.collation;
         if (column.isNullable !== true && !column.isGenerated) // NOT NULL is not supported with GENERATED
             c += " NOT NULL";
         // if (column.isPrimary === true && addPrimary)
