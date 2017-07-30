@@ -264,7 +264,7 @@ export class OracleDriver implements Driver {
     prepareHydratedValue(value: any, columnMetadata: ColumnMetadata): any {
         if (value === null || value === undefined)
             return value;
-            
+
         if (columnMetadata.type === Boolean) {
             return value ? true : false;
 
@@ -318,6 +318,10 @@ export class OracleDriver implements Driver {
      * Normalizes "default" value of the column.
      */
     normalizeDefault(column: ColumnMetadata): string {
+        var typeMap = {
+            number: (columnMetadata: ColumnMetadata) =>
+              "" + columnMetadata.default
+        };
         if (typeof column.default === "number") {
             return "" + column.default;
 
@@ -337,7 +341,6 @@ export class OracleDriver implements Driver {
 
     createFullType(column: ColumnSchema): string {
         let type = column.type;
-
         if (column.length) {
             type += "(" + column.length + ")";
         } else if (column.precision && column.scale) {
