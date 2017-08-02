@@ -75,6 +75,7 @@ Also now all
 * `schemaName` in connection options is deprecated. Use `schema` instead
 * `TYPEORM_AUTO_SCHEMA_SYNC` env variable is now called `TYPEORM_SYNCHRONIZE`
 * `schemaSync` method in `Connection` has been renamed to `synchronize`
+* `getEntityManager` has been deprecated. Use `getManager` instead.
 
 ### NEW FEATURES
 
@@ -109,6 +110,12 @@ Also now all
 * fixes [#285](https://github.com/typeorm/typeorm/issues/285) - issue when cli commands rise `CannotCloseNotConnectedError`
 * fixes [#309](https://github.com/typeorm/typeorm/issues/309) - issue when `andHaving` didn't work without calling `having` on `QueryBuilder`
 * fixes issues with default value being updated by schema sync
+
+# 0.0.11
+
+* fixes [#341](https://github.com/typeorm/typeorm/issues/341) - issue when trying to create a `OneToOne` relation with 
+`referencedColumnName` where the relation is not between primary keys
+
 
 # 0.0.10
 
