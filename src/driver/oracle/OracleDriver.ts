@@ -103,9 +103,9 @@ export class OracleDriver implements Driver {
      * Column types are driver dependant.
      */
     mappedDataTypes: MappedColumnTypes = {
-        createDate: "datetime",
+        createDate: "timestamp",
         createDateDefault: "CURRENT_TIMESTAMP",
-        updateDate: "datetime",
+        updateDate: "timestamp",
         updateDateDefault: "CURRENT_TIMESTAMP",
         version: "number",
         treeLevel: "number",
@@ -268,7 +268,7 @@ export class OracleDriver implements Driver {
     prepareHydratedValue(value: any, columnMetadata: ColumnMetadata): any {
         if (value === null || value === undefined)
             return value;
-            
+
         if (columnMetadata.type === Boolean) {
             return value ? true : false;
 
@@ -303,7 +303,7 @@ export class OracleDriver implements Driver {
             type += "nvarchar2";
 
         } else if (column.type === Date) {
-            type += "timestamp";
+            type += "timestamp(3)";
 
         } else if (column.type === Boolean) {
             type += "number(1)";
