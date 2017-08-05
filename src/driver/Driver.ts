@@ -89,6 +89,11 @@ export interface Driver {
 
     /**
      * Transforms type of the given column to a database column type.
+     *
+     *    Notes for future database integrations:
+     *      For JS Date properties, the database column type should
+     *        Have at least millisecond precision ()
+     *        Not store timezone information
      */
     normalizeType(column: { type?: ColumnType, length?: number, precision?: number, scale?: number, isArray?: boolean }): string;
 

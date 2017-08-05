@@ -103,9 +103,9 @@ export class OracleDriver implements Driver {
      * Column types are driver dependant.
      */
     mappedDataTypes: MappedColumnTypes = {
-        createDate: "datetime",
+        createDate: "timestamp",
         createDateDefault: "CURRENT_TIMESTAMP",
-        updateDate: "datetime",
+        updateDate: "timestamp",
         updateDateDefault: "CURRENT_TIMESTAMP",
         version: "number",
         treeLevel: "number",
@@ -303,7 +303,7 @@ export class OracleDriver implements Driver {
             type += "nvarchar2";
 
         } else if (column.type === Date) {
-            type += "timestamp(0)";
+            type += "timestamp(3)";
 
         } else if (column.type === Boolean) {
             type += "number(1)";
@@ -322,10 +322,6 @@ export class OracleDriver implements Driver {
      * Normalizes "default" value of the column.
      */
     normalizeDefault(column: ColumnMetadata): string {
-        var typeMap = {
-            number: (columnMetadata: ColumnMetadata) =>
-              "" + columnMetadata.default
-        };
         if (typeof column.default === "number") {
             return "" + column.default;
 
