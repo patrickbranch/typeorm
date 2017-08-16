@@ -387,7 +387,7 @@ export class SubjectOperationExecutor {
             subject.parentGeneratedId = parentGeneratedId.generatedMap[parentEntityMetadata.primaryColumns[0].propertyName];
 
         // todo: better if insert method will return object with all generated ids, object id, etc.
-        if (insertResult.generatedMap)
+        if (insertResult && insertResult.generatedMap)
             subject.generatedMap = insertResult.generatedMap;
     }
 

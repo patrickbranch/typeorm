@@ -50,7 +50,23 @@ export class OracleDriver implements Driver {
      * Default values of length, precision and scale depends on column data type.
      * Used in the cases when length/precision/scale is not specified by user.
      */
-    dataTypeDefaults: DataTypeDefaults;
+    dataTypeDefaults: DataTypeDefaults = {
+      "timestamp": {
+        // because JavaScript Date types only have millisecond precision
+        precision: 3
+      },
+      "nvarchar2": {
+        length: 2000
+      },
+      "varchar2": {
+        // will break if Oracle version is earlier than 8.0
+        length: 4000
+      },
+      "varchar": {
+        // will break if Oracle version is earlier than 8.0
+        length: 4000
+      }
+    };
 
     // -------------------------------------------------------------------------
     // Public Implemented Properties
@@ -296,6 +312,7 @@ export class OracleDriver implements Driver {
      */
     normalizeType(column: { type?: ColumnType, length?: number, precision?: number, scale?: number, isArray?: boolean }): string {
         let type = "";
+
         if (column.type === Number) {
             type += "integer";
 
@@ -303,10 +320,10 @@ export class OracleDriver implements Driver {
             type += "nvarchar2";
 
         } else if (column.type === Date) {
-            type += "timestamp(3)";
+            type += "timestamp";
 
         } else if (column.type === Boolean) {
-            type += "number(1)";
+            type += "number";
 
         } else if (column.type === "simple-array") {
             type += "text";
@@ -340,19 +357,30 @@ export class OracleDriver implements Driver {
     }
 
     createFullType(column: ColumnSchema): string {
-        let type = column.type;
+        let createTypeBoundsExpr : (column : {length? : number|undefined, precision? : number|undefined , scale? : number|undefined}) => string =
+          (col) => {
+            if (col.length) {
+                return "(" + col.length + ")";
+            } else if (col.precision && col.scale) {
+                return "(" + col.precision + "," + col.scale + ")";
+            } else if (col.precision) {
+                return "(" + col.precision + ")";
+            } else if (col.scale) {
+                return  "(" + col.scale + ")";
+            }
+            else {
+                return "";
+            }
+          };
 
-        if (column.length) {
-            type += "(" + column.length + ")";
-        } else if (column.precision && column.scale) {
-            type += "(" + column.precision + "," + column.scale + ")";
-        } else if (column.precision) {
-            type +=  "(" + column.precision + ")";
-        } else if (column.scale) {
-            type +=  "(" + column.scale + ")";
-        } else  if (this.dataTypeDefaults && this.dataTypeDefaults[column.type] && this.dataTypeDefaults[column.type].length) {
-            type +=  "(" + this.dataTypeDefaults[column.type].length + ")";
+        let type = column.type;
+        let typeBoundsExpr = createTypeBoundsExpr(column);
+
+        if (typeBoundsExpr === "" && this.dataTypeDefaults && this.dataTypeDefaults[column.type]){
+            typeBoundsExpr = createTypeBoundsExpr(this.dataTypeDefaults[column.type]);
         }
+
+        type += typeBoundsExpr;
 
         if (column.isArray)
             type += " array";
